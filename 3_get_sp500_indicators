@@ -1,0 +1,28 @@
+import yfinance as yf
+import pandas as pd
+import os
+
+# Get today's date in YYYY-MM-DD format
+today = pd.Timestamp.today().strftime("%Y-%m-%d")
+
+# Load tickers from CSV (ensure your CSV has a column for tickers)
+df_tickers = pd.read_csv('C:/.../SP500_Tickers.csv')  # Adjust to the path of your CSV
+tickers = df_tickers['Symbol'].tolist()  # Assuming the column with tickers is named 'Ticker'
+
+# Process each ticker
+for ticker in tickers:
+    stock = yf.Ticker(ticker)
+    stock_info = stock.info
+
+   ...............
+
+    # Drop the 'Indicator' column
+    df_transposed = df_transposed.drop(columns=["Indicator"])
+
+    # Save each ticker's data as a separate CSV
+    file_path = f"C:/.../{ticker}_data.csv"
+
+    # Save to CSV for each ticker (overwrite if the file exists)
+    df_transposed.to_csv(file_path, index=False, header=True)
+
+    print(f"Saved data for {ticker} to {file_path}")
