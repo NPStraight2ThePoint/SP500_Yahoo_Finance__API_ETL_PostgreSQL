@@ -1,0 +1,64 @@
+import os
+import pandas as pd
+
+# Path to the folder where your CSVs are located
+folder_path = "C:/.../SP_500_Pricing"
+
+# List to hold individual DataFrames
+dfs = []
+
+# Loop through all CSV files in the folder
+for filename in os.listdir(folder_path):
+    if filename.endswith('.csv'):  # Ensure we're only dealing with CSV files
+        # Construct the full file path
+        file_path = os.path.join(folder_path, filename)
+
+        # Read each CSV file into a DataFrame
+        df = pd.read_csv(file_path)
+
+        # Convert the 'Date' column to datetime format (adjust format as needed)
+        df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')  # or just omit 'format' if needed
+
+        # Append to the list of DataFrames
+        dfs.append(df)
+
+# Concatenate all DataFrames into a single DataFrame
+merged_df = pd.concat(dfs, ignore_index=True)
+
+# Save the merged DataFrame to a new CSV file
+output_path = 'C:/.../sp_500_merged_data.csv'
+merged_df.to_csv(output_path, index=False)
+
+print(f'Merged CSV saved to {output_path}')
+
+import psycopg2
+import pandas as pd
+
+# Database connection parameters
+....
+
+# Read the merged CSV into a DataFrame
+df = pd.read_csv('C:/../sp_500_merged_data.csv')
+
+# Establish a connection to PostgreSQL
+conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
+
+# Create a cursor object
+cur = conn.cursor()
+
+# Create the SQL query to load the data into the table
+copy_query = """
+COPY public."SP_500_Pricing" (date, ticker, open, high, low, close, adj_close, volume, dividends, stock_splits)
+FROM stdin WITH CSV HEADER DELIMITER as ','
+"""
+
+# Open the CSV file and copy its content to the PostgreSQL table
+with open('C:/..../sp_500_merged_data.csv', 'r') as f:
+    cur.copy_expert(sql=copy_query, file=f)
+
+# Commit the transaction and close the connection
+conn.commit()
+cur.close()
+conn.close()
+
+print("Data loaded successfully into PostgreSQL!")
