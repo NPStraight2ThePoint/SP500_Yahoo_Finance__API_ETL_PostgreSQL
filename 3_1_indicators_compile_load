@@ -1,0 +1,64 @@
+import psycopg2
+import pandas as pd
+import numpy as np
+import json
+import os
+
+# Define the folder containing the ticker CSV files
+folder_path = 'C:/.../SP_500_Company_info/'
+folder_path2 = 'C:/.../Joined Data/'
+# List all files in the folder
+files = [f for f in os.listdir(folder_path) if f.endswith('_data.csv')]
+
+# Prepare an empty list to collect the DataFrames
+df_list = []
+
+# Loop through each file and read them into DataFrames
+for file in files:
+    file_path = os.path.join(folder_path, file)
+    df = pd.read_csv(file_path)
+
+    # Add the DataFrame to the list
+    df_list.append(df)
+
+# Concatenate all DataFrames in the list
+merged_df = pd.concat(df_list, ignore_index=True)
+
+# Save the merged DataFrame into a new CSV
+merged_file_path = os.path.join(folder_path2, 'SP_500_Indicators_merged_data.csv')
+merged_df.to_csv(merged_file_path, index=False)
+
+print(f"Merged data saved to {merged_file_path}")
+
+# Database connection parameters
+.....
+
+# Read the merged CSV into a DataFrame
+#df = pd.read_csv('C:/.../sp_500_merged_data.csv')
+# Read the CSV
+csv_path = "C:/.../SP_500_Indicators_merged_data.csv"
+df = pd.read_csv(csv_path)
+
+# Establish a connection to PostgreSQL
+conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
+
+# Create a cursor object
+cur = conn.cursor()
+
+# COPY command without specifying column names
+copy_query = """
+COPY public."sp_500_indicators"
+FROM stdin 
+WITH CSV HEADER DELIMITER ',';
+"""
+
+# Open the CSV file and copy its content to the PostgreSQL table
+with open('C:/..../sp_500_Indicators_merged_data.csv', 'r') as f:
+    cur.copy_expert(sql=copy_query, file=f)
+
+# Commit the transaction and close the connection
+conn.commit()
+cur.close()
+conn.close()
+
+print("Data loaded successfully into PostgreSQL!")
