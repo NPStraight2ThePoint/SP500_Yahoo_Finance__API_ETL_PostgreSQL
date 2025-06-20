@@ -2,11 +2,10 @@ import yfinance as yf
 import pandas as pd
 import os
 
-# Get today's date in YYYY-MM-DD format
 today = pd.Timestamp.today().strftime("%Y-%m-%d")
 
 # Load tickers from CSV (ensure your CSV has a column for tickers)
-df_tickers = pd.read_csv('C:/.../SP500_Tickers.csv')  # Adjust to the path of your CSV
+df_tickers = pd.read_csv('SP500_Tickers.csv')  # Adjust to the path of your CSV
 tickers = df_tickers['Symbol'].tolist()  # Assuming the column with tickers is named 'Ticker'
 
 # Process each ticker
@@ -14,15 +13,40 @@ for ticker in tickers:
     stock = yf.Ticker(ticker)
     stock_info = stock.info
 
-   ...............
+    # Convert the stock information dictionary to DataFrame
+    df = pd.DataFrame.from_dict(stock_info, orient="index", columns=[ticker])
+    df.reset_index(inplace=True)
+    df.rename(columns={"index": "Indicator"}, inplace=True)
+
+    # Ensure all indicators are present by reindexing with the complete list of indicators dynamically
+    all_indicators = sorted(list(stock_info.keys()))  # Collect indicators dynamically for the current ticker
+    df = df.set_index("Indicator").reindex(all_indicators).reset_index()
+
+    # Fill missing values with "NA"
+    df[ticker] = df[ticker].fillna("NA")
+
+    # Transpose the DataFrame to get desired format
+    df_transposed = df.set_index("Indicator").T.reset_index()
+
+    # Rename the 'index' column to 'Indicator' for clarity
+    df_transposed.rename(columns={'index': 'Indicator'}, inplace=True)
+
+    # Add today's date as the first column for all rows
+    df_transposed.insert(0, "Date", today)
+
+    # Add ticker column
+    df_transposed.insert(1, "Ticker", ticker)
 
     # Drop the 'Indicator' column
     df_transposed = df_transposed.drop(columns=["Indicator"])
 
     # Save each ticker's data as a separate CSV
-    file_path = f"C:/.../{ticker}_data.csv"
+    file_path = f"C:/.../SP_500_Company_Info/{ticker}_data.csv"
 
     # Save to CSV for each ticker (overwrite if the file exists)
     df_transposed.to_csv(file_path, index=False, header=True)
 
     print(f"Saved data for {ticker} to {file_path}")
+
+
+
