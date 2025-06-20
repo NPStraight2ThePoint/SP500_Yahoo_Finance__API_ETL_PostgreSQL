@@ -29,3 +29,14 @@ ETL pipeline that extracts historical pricing & financial indicators for all S&P
 
 - `4_adj_closes_ITD_merged.py`  
   → Merge all Adj. Close pricing into one CSV.
+
+### 🆔 Project Info
+
+**Author:** *Nicholas Papadimitris *  
+**Created on:** *01/03/2025 9:00 PM* (UTC)   
+**Project ID:** `YF_ETL_01_Mar2025`
+**GitHub**: [My GitHub](https://github.com/NPStraight2ThePoint)
+
+📧 **Email:** nicholas.papadimitris@gmail.com  
+💼 **LinkedIn:** [Nicholas Papadimitris](https://www.linkedin.com/in/nicholas-papadimitris/)
+---
