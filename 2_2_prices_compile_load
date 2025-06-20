@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 # Path to the folder where your CSVs are located
-folder_path = "C:/.../SP_500_Pricing"
+folder_path = "Root/SP_500_Pricing"
 
 # List to hold individual DataFrames
 dfs = []
@@ -26,7 +26,7 @@ for filename in os.listdir(folder_path):
 merged_df = pd.concat(dfs, ignore_index=True)
 
 # Save the merged DataFrame to a new CSV file
-output_path = 'C:/.../sp_500_merged_data.csv'
+output_path = 'sp_500_merged_data.csv'
 merged_df.to_csv(output_path, index=False)
 
 print(f'Merged CSV saved to {output_path}')
@@ -35,10 +35,13 @@ import psycopg2
 import pandas as pd
 
 # Database connection parameters
-....
+dbname = 'Yahoo_Finance_API'
+user = '****'
+password = '****'
+host = 'localhost'  # or your host IP
 
 # Read the merged CSV into a DataFrame
-df = pd.read_csv('C:/../sp_500_merged_data.csv')
+df = pd.read_csv('sp_500_merged_data.csv')
 
 # Establish a connection to PostgreSQL
 conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
@@ -53,7 +56,7 @@ FROM stdin WITH CSV HEADER DELIMITER as ','
 """
 
 # Open the CSV file and copy its content to the PostgreSQL table
-with open('C:/..../sp_500_merged_data.csv', 'r') as f:
+with open('sp_500_merged_data.csv', 'r') as f:
     cur.copy_expert(sql=copy_query, file=f)
 
 # Commit the transaction and close the connection
@@ -62,3 +65,4 @@ cur.close()
 conn.close()
 
 print("Data loaded successfully into PostgreSQL!")
+
