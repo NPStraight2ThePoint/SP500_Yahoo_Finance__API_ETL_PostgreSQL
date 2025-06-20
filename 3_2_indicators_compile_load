@@ -5,8 +5,8 @@ import json
 import os
 
 # Define the folder containing the ticker CSV files
-folder_path = 'C:/.../SP_500_Company_info/'
-folder_path2 = 'C:/.../Joined Data/'
+folder_path = 'Root/SP_500_Company_info/'
+folder_path2 = 'Root/Joined Data/'
 # List all files in the folder
 files = [f for f in os.listdir(folder_path) if f.endswith('_data.csv')]
 
@@ -31,18 +31,24 @@ merged_df.to_csv(merged_file_path, index=False)
 print(f"Merged data saved to {merged_file_path}")
 
 # Database connection parameters
-.....
+dbname = 'Yahoo_Finance_API'
+user = '***'
+password = '***'
+host = 'localhost'  # or your host IP
 
 # Read the merged CSV into a DataFrame
-#df = pd.read_csv('C:/.../sp_500_merged_data.csv')
+#df = pd.read_csv('sp_500_merged_data.csv')
 # Read the CSV
-csv_path = "C:/.../SP_500_Indicators_merged_data.csv"
+csv_path = "SP_500_Indicators_merged_data.csv"
 df = pd.read_csv(csv_path)
 
-# Establish a connection to PostgreSQL
-conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
+# Convert JSON fields properly (assuming "companyofficers" is the JSON column)
+df["companyOfficers"] = df["companyOfficers"].apply(lambda x: json.dumps(eval(x)) if isinstance(x, str) else x)
+# Convert JSON fields properly (assuming "companyofficers" is the JSON column)
+df["corporateActions"] = df["corporateActions"].apply(lambda x: json.dumps(eval(x)) if isinstance(x, str) else x)
+df.to_csv(csv_path, index=False)
 
-# Create a cursor object
+conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
 cur = conn.cursor()
 
 # COPY command without specifying column names
@@ -53,12 +59,12 @@ WITH CSV HEADER DELIMITER ',';
 """
 
 # Open the CSV file and copy its content to the PostgreSQL table
-with open('C:/..../sp_500_Indicators_merged_data.csv', 'r') as f:
+with open('sp_500_Indicators_merged_data.csv', 'r') as f:
     cur.copy_expert(sql=copy_query, file=f)
 
-# Commit the transaction and close the connection
 conn.commit()
 cur.close()
 conn.close()
 
 print("Data loaded successfully into PostgreSQL!")
+
