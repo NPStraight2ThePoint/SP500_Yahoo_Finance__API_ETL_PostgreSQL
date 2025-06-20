@@ -30,6 +30,12 @@ ETL pipeline that extracts historical pricing & financial indicators for all S&P
 - `4_adj_closes_ITD_merged.py`  
   → Merge all Adj. Close pricing into one CSV.
 
+## Database
+
+ - [Pricing](https://github.com/NPStraight2ThePoint/SP500_Yahoo_Finance__API_ETL_PostgreSQL/blob/Main/Database/DB_S%26P%20500%20Pricing%20Table.png)
+ - [Indicators](https://github.com/NPStraight2ThePoint/SP500_Yahoo_Finance__API_ETL_PostgreSQL/blob/Main/Database/DB_S%26P%20500%20Indicators%20Table.png)
+ 
+
 ### 🆔 Project Info
 
 **Author:** *Nicholas Papadimitris *  
