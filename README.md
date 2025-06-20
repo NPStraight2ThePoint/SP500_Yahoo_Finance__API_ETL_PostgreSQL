@@ -15,7 +15,7 @@ ETL pipeline that extracts historical pricing & financial indicators for all S&P
   → Scrape all S&P 500 tickers from Wikipedia.
 
 - `2_1_get_sp500_prices_ITD.py`  
-  → Retrieve inception-to-date historical pricing (Open, Close, High, Low, Adj. Close, Volume) for all S&P 500 tickers.
+  → Retrieve inception-to-date historical pricing (Open, Close, High, Low, Adj. Close, Volume, Dividends, Stock Splits) for all S&P 500 tickers.
 
 - `2_2_prices_compile_load.py`  
   → Load pricing data into the database.
