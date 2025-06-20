@@ -2,7 +2,8 @@ import os
 import pandas as pd
 
 # Folder containing the CSV files
-folder_path = "C:/.../SP_500_Pricing"
+#folder_path = "Root/SP_500_Pricing"
+folder_path = "Root/SP_500_Pricing"
 # List to store individual DataFrames
 dataframes = []
 
@@ -13,7 +14,9 @@ for file in os.listdir(folder_path):
         try:
             # Read the CSV with the first column as the index
             df = pd.read_csv(file_path, index_col=0, parse_dates=True)
-            
+            df.index = pd.to_datetime(df.index, errors='coerce')  # Ensure index is datetime
+            df = df[~df.index.isna()]  # Drop rows with invalid (NaN) index
+
             # Keep only the 'Adj Close' column
             if 'Adj Close' in df.columns:
                 df = df[['Adj Close']]  # Select only the 'Adj Close' column
@@ -31,7 +34,8 @@ for file in os.listdir(folder_path):
 
 # Merge all DataFrames on their index
 merged_df = pd.concat(dataframes, axis=1, join="outer")
-
+os.chdir('Root/Joined Data')
 # Save the merged DataFrame to a new CSV file
+#merged_df.to_csv("SP_500 Prices Merged.csv")
 merged_df.to_csv("SP500 Adj.Closes ITD Merged.csv")
 print("CSV files merged successfully with only 'Adj Close' columns!")
