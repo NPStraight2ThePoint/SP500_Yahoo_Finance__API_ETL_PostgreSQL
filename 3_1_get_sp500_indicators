@@ -1,52 +1,265 @@
-import yfinance as yf
-import pandas as pd
 import os
+import shutil
+import pandas as pd
+import yfinance as yf
+from datetime import date
 
-today = pd.Timestamp.today().strftime("%Y-%m-%d")
+def backup_files(source_dir: str, destination_dir: str, copy_files: bool = True):
+    os.makedirs(destination_dir, exist_ok=True)
+    files = os.listdir(source_dir)
+    for file_name in files:
+        src_path = os.path.join(source_dir, file_name)
+        dst_path = os.path.join(destination_dir, file_name)
+        if copy_files:
+            shutil.copy(src_path, dst_path)
+        else:
+            shutil.move(src_path, dst_path)
+    print(f"All files have been {'copied' if copy_files else 'moved'} successfully!")
 
-# Load tickers from CSV (ensure your CSV has a column for tickers)
-df_tickers = pd.read_csv('SP500_Tickers.csv')  # Adjust to the path of your CSV
-tickers = df_tickers['Symbol'].tolist()  # Assuming the column with tickers is named 'Ticker'
+def scrape_company_info(
+    tickers_csv: str,
+    output_dir: str,
+    backup_dir: str = None,
+    cats: list = None
+):
+    today = date.today()
+    os.makedirs(output_dir, exist_ok=True)
+    if backup_dir:
+        backup_files(output_dir, backup_dir, copy_files=True)
 
-# Process each ticker
-for ticker in tickers:
-    stock = yf.Ticker(ticker)
-    stock_info = stock.info
+    # Read tickers
+    df_tickers = pd.read_csv(tickers_csv)
 
-    # Convert the stock information dictionary to DataFrame
-    df = pd.DataFrame.from_dict(stock_info, orient="index", columns=[ticker])
-    df.reset_index(inplace=True)
-    df.rename(columns={"index": "Indicator"}, inplace=True)
+    # Default indicator list if not provided
+    if cats is None:
+        cats = [
+            "52WeekChange",
+            "SandP52WeekChange",
+            "address1",
+            "ask",
+            "askSize",
+            "auditRisk",
+            "averageAnalystRating",
+            "averageDailyVolume10Day",
+            "averageDailyVolume3Month",
+            "averageVolume",
+            "averageVolume10days",
+            "beta",
+            "bid",
+            "bidSize",
+            "boardRisk",
+            "bookValue",
+            "city",
+            "companyOfficers",
+            "compensationAsOfEpochDate",
+            "compensationRisk",
+            "corporateActions",
+            "country",
+            "cryptoTradeable",
+            "currency",
+            "currentPrice",
+            "currentRatio",
+            "customPriceAlertConfidence",
+            "dateShortInterest",
+            "dayHigh",
+            "dayLow",
+            "debtToEquity",
+            "displayName",
+            "dividendDate",
+            "dividendRate",
+            "dividendYield",
+            "earningsCallTimestampEnd",
+            "earningsCallTimestampStart",
+            "earningsGrowth",
+            "earningsQuarterlyGrowth",
+            "earningsTimestamp",
+            "earningsTimestampEnd",
+            "earningsTimestampStart",
+            "ebitda",
+            "ebitdaMargins",
+            "enterpriseToEbitda",
+            "enterpriseToRevenue",
+            "enterpriseValue",
+            "epsCurrentYear",
+            "epsForward",
+            "epsTrailingTwelveMonths",
+            "esgPopulated",
+            "exDividendDate",
+            "exchange",
+            "exchangeDataDelayedBy",
+            "exchangeTimezoneName",
+            "exchangeTimezoneShortName",
+            "executiveTeam",
+            "fiftyDayAverage",
+            "fiftyDayAverageChange",
+            "fiftyDayAverageChangePercent",
+            "fiftyTwoWeekChangePercent",
+            "fiftyTwoWeekHigh",
+            "fiftyTwoWeekHighChange",
+            "fiftyTwoWeekHighChangePercent",
+            "fiftyTwoWeekLow",
+            "fiftyTwoWeekLowChange",
+            "fiftyTwoWeekLowChangePercent",
+            "fiftyTwoWeekRange",
+            "financialCurrency",
+            "firstTradeDateMilliseconds",
+            "fiveYearAvgDividendYield",
+            "floatShares",
+            "forwardEps",
+            "forwardPE",
+            "freeCashflow",
+            "fullExchangeName",
+            "fullTimeEmployees",
+            "gmtOffSetMilliseconds",
+            "governanceEpochDate",
+            "grossMargins",
+            "grossProfits",
+            "hasPrePostMarketData",
+            "heldPercentInsiders",
+            "heldPercentInstitutions",
+            "impliedSharesOutstanding",
+            "industry",
+            "industryDisp",
+            "industryKey",
+            "irWebsite",
+            "isEarningsDateEstimate",
+            "language",
+            "lastDividendDate",
+            "lastDividendValue",
+            "lastFiscalYearEnd",
+            "lastSplitDate",
+            "lastSplitFactor",
+            "longBusinessSummary",
+            "longName",
+            "market",
+            "marketCap",
+            "marketState",
+            "maxAge",
+            "messageBoardId",
+            "mostRecentQuarter",
+            "netIncomeToCommon",
+            "nextFiscalYearEnd",
+            "numberOfAnalystOpinions",
+            "open",
+            "operatingCashflow",
+            "operatingMargins",
+            "overallRisk",
+            "payoutRatio",
+            "phone",
+            "postMarketChange",
+            "postMarketChangePercent",
+            "postMarketPrice",
+            "postMarketTime",
+            "previousClose",
+            "priceEpsCurrentYear",
+            "priceHint",
+            "priceToBook",
+            "priceToSalesTrailing12Months",
+            "profitMargins",
+            "quickRatio",
+            "quoteSourceName",
+            "quoteType",
+            "recommendationKey",
+            "recommendationMean",
+            "region",
+            "regularMarketChange",
+            "regularMarketChangePercent",
+            "regularMarketDayHigh",
+            "regularMarketDayLow",
+            "regularMarketDayRange",
+            "regularMarketOpen",
+            "regularMarketPreviousClose",
+            "regularMarketPrice",
+            "regularMarketTime",
+            "regularMarketVolume",
+            "returnOnAssets",
+            "returnOnEquity",
+            "revenueGrowth",
+            "revenuePerShare",
+            "sector",
+            "sectorDisp",
+            "sectorKey",
+            "shareHolderRightsRisk",
+            "sharesOutstanding",
+            "sharesPercentSharesOut",
+            "sharesShort",
+            "sharesShortPreviousMonthDate",
+            "sharesShortPriorMonth",
+            "shortName",
+            "shortPercentOfFloat",
+            "shortRatio",
+            "sourceInterval",
+            "state",
+            "symbol",
+            "targetHighPrice",
+            "targetLowPrice",
+            "targetMeanPrice",
+            "targetMedianPrice",
+            "totalCash",
+            "totalCashPerShare",
+            "totalDebt",
+            "totalRevenue",
+            "tradeable",
+            "trailingAnnualDividendRate",
+            "trailingAnnualDividendYield",
+            "trailingEps",
+            "trailingPE",
+            "trailingPegRatio",
+            "triggerable",
+            "twoHundredDayAverage",
+            "twoHundredDayAverageChange",
+            "twoHundredDayAverageChangePercent",
+            "typeDisp",
+            "volume",
+            "website",
+            "zip"
+        ]
 
-    # Ensure all indicators are present by reindexing with the complete list of indicators dynamically
-    all_indicators = sorted(list(stock_info.keys()))  # Collect indicators dynamically for the current ticker
-    df = df.set_index("Indicator").reindex(all_indicators).reset_index()
+    for _, row in df_tickers.iterrows():
+        symbol = row['Symbol'].strip().replace('.', '-')
+        try:
+            stock = yf.Ticker(symbol)
+            info_dict = stock.info
+        except Exception as e:
+            print(f"Failed to get info for {symbol}: {e}")
+            continue
 
-    # Fill missing values with "NA"
-    df[ticker] = df[ticker].fillna("NA")
+        # Convert dict to DataFrame
+        df_info = pd.DataFrame.from_dict(info_dict, orient='index', columns=[symbol])
+        df_info.index.name = 'Indicator'
 
-    # Transpose the DataFrame to get desired format
-    df_transposed = df.set_index("Indicator").T.reset_index()
+        # Add missing indicators with 'NA'
+        missing = [c for c in cats if c not in df_info.index]
+        if missing:
+            missing_df = pd.DataFrame('NA', index=missing, columns=[symbol])
+            missing_df.index.name = 'Indicator'
+            df_info = pd.concat([df_info, missing_df])
 
-    # Rename the 'index' column to 'Indicator' for clarity
-    df_transposed.rename(columns={'index': 'Indicator'}, inplace=True)
+        # Sort by cats order
+        df_info['Indicator'] = pd.CategoricalIndex(df_info.index, ordered=True, categories=cats)
+        df_info = df_info.sort_values('Indicator')
+        df_info = df_info.reset_index()
 
-    # Add today's date as the first column for all rows
-    df_transposed.insert(0, "Date", today)
+        # Use date index if you want
+        df_info.index = pd.date_range(start=today, periods=len(df_info))
+        df_info.index.name = 'Date'
 
-    # Add ticker column
-    df_transposed.insert(1, "Ticker", ticker)
+        # Save to CSV
+        file_path = os.path.join(output_dir, f"{symbol}.csv")
+        if os.path.exists(file_path):
+            df_info.to_csv(file_path, mode='a', index=True, header=False)
+        else:
+            df_info.to_csv(file_path, mode='w', index=True, header=True)
 
-    # Drop the 'Indicator' column
-    df_transposed = df_transposed.drop(columns=["Indicator"])
+        print(f"Saved {file_path}")
 
-    # Save each ticker's data as a separate CSV
-    file_path = f"C:/.../SP_500_Company_Info/{ticker}_data.csv"
-
-    # Save to CSV for each ticker (overwrite if the file exists)
-    df_transposed.to_csv(file_path, index=False, header=True)
-
-    print(f"Saved data for {ticker} to {file_path}")
+if __name__ == '__main__':
+    scrape_company_info(
+        tickers_csv='Root/Static Data/SP500_Tickers.csv',
+        output_dir='Root/SP_500_Company_Info',
+        backup_dir='Root/Backup',
+        cats=None  # or pass your full list here
+    )
 
 
 
