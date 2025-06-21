@@ -65,3 +65,108 @@ import runpy
 runpy.run_path('Root/5.1 Fund_Data Flatten.py')
 
 print("Data Flattening has finished.")
+
+# Path to the folder containing your files
+folder_path = 'Root/Fund Holding Info_data'   # Replace with your folder path
+output_folder = 'Root/Fund Holding Info_data'  # Folder to save flattened files
+os.makedirs(output_folder, exist_ok=True)
+
+
+# Function to extract and flatten holdings into a DataFrame
+def flatten_holdings(data):
+    if pd.notnull(data) and data.strip():  # Ensure data is not null or empty
+        try:
+            df = pd.DataFrame(eval(data))  # Convert string to DataFrame
+            return df[['symbol', 'holdingPercent']]  # Keep only required columns
+        except Exception as e:
+            print(f"Error processing holdings: {e}")
+    return pd.DataFrame()  # Return empty DataFrame if data is invalid
+
+
+# Function to extract and flatten sector weightings into a DataFrame
+def flatten_sector_weightings(data):
+    if pd.notnull(data) and data.strip():  # Ensure data is not null or empty
+        try:
+            # Convert the string to a list of dictionaries
+            sector_data = eval(data)
+
+            # Flatten the list of dictionaries into a DataFrame
+            flat_list = [
+                {"sector": key, "sectorWeightingPercent": value}
+                for d in sector_data
+                for key, value in d.items()
+            ]
+            return pd.DataFrame(flat_list)  # Return the flattened DataFrame
+        except Exception as e:
+            print(f"Error processing sector weightings: {e}")
+    return pd.DataFrame()  # Return empty DataFrame if data is invalid
+
+
+# Loop through all files in the folder
+for file_name in os.listdir(folder_path):
+    if file_name.endswith(".csv"):  # Process only CSV files
+        file_path = os.path.join(folder_path, file_name)
+
+        # Read the CSV file into a DataFrame
+        df = pd.read_csv(file_path)
+
+        # Flatten 'holdings' column
+        if 'holdings' in df.columns:
+            holdings_list = df['holdings'].apply(flatten_holdings)  # Process each row
+            if not holdings_list.empty:
+                holdings_expanded = pd.concat(holdings_list.to_list(), ignore_index=True)
+                df = pd.concat([df, holdings_expanded], axis=1)  # Add flattened data
+
+        # Flatten 'sectorWeightings' column
+        if 'sectorWeightings' in df.columns:
+            sector_list = df['sectorWeightings'].apply(flatten_sector_weightings)  # Process each row
+            if not sector_list.empty:
+                sector_expanded = pd.concat(sector_list.to_list(), ignore_index=True)
+                df = pd.concat([df, sector_expanded], axis=1)  # Add flattened data
+
+        # Save the flattened file
+        flattened_file_path = os.path.join(output_folder, f"flattened_{file_name}")
+        df.to_csv(flattened_file_path, index=False)
+
+        print(f"Flattened data saved to: {flattened_file_path}")
+
+# Folder path where the files are located
+folder_path = 'Root/Fund Holding Info_data'
+
+# Initialize an empty list to store DataFrames
+all_data = []
+# Loop through all files in the folder
+for file in os.listdir(folder_path):
+    if file.endswith('.csv'):  # Assuming the files are CSV
+        file_path = os.path.join(folder_path, file)
+
+        # Read the current CSV file into a DataFrame
+        df = pd.read_csv(file_path)
+
+        # Extract the ticker from the filename (e.g., flattened_ZYUS.AX -> ZYUS.AX)
+        ticker = file.split('_')[1].replace('.csv', '')
+
+        # Add the ticker as a new column
+        df['ticker'] = ticker
+
+        # Append the DataFrame to the list
+        all_data.append(df)
+
+# Concatenate all the DataFrames into a single DataFrame
+merged_df = pd.concat(all_data, ignore_index=True)
+
+# Rearrange the columns so the ticker is at the beginning
+final_df = merged_df[['ticker', 'symbol', 'holdingPercent', 'sector', 'sectorWeightingPercent']]
+
+# Optionally, save the result to a CSV
+final_df.to_csv('final_merged_data.csv', index=False)
+
+# Display the final DataFrame
+print(final_df)
+
+
+
+
+
+
+
