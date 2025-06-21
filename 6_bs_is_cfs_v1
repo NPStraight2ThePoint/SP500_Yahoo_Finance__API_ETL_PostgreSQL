@@ -1,0 +1,71 @@
+import pandas as pd
+import csv
+from yahooquery import Ticker
+import os
+from datetime import date
+from datetime import datetime, timedelta
+
+# Get today's date
+today = date.today()
+
+# Read the CSV file into a DataFrame
+df = pd.read_csv('SP500_Tickers.csv')
+
+# List to store rows
+rows = []
+
+# Loop through each row in the DataFrame
+for index, row in df.iterrows():
+
+    row['Symbol'] = row['Symbol'].replace('.', '-')
+
+    Stock = Ticker(row['Symbol'])
+    # Fetch annual balance sheet data excluding trailing twelve-month data
+    balance_sheet_A = Stock.balance_sheet(frequency='a', trailing=True)
+    balance_sheet_Q = Stock.balance_sheet(frequency='q', trailing=True)
+
+    # Fetch quarterly cash flow data including trailing twelve-month data
+    cash_flow_A = Stock.cash_flow(frequency='a', trailing=True)
+    cash_flow_Q = Stock.cash_flow(frequency='q', trailing=True)
+
+    # Fetch annual income statement data excluding trailing twelve-month data
+    income_statement_A = Stock.income_statement(frequency='a', trailing=True)
+    income_statement_Q = Stock.income_statement(frequency='q', trailing=True)
+
+    # Convert to DataFrame if not already (for safety)
+    balance_sheet_A_df = balance_sheet_A.reset_index()
+    cash_flow_A_df = cash_flow_A.reset_index()
+    income_statement_A_df = income_statement_A.reset_index()
+
+    balance_sheet_Q_df = balance_sheet_Q.reset_index()
+    cash_flow_Q_df = cash_flow_Q.reset_index()
+    income_statement_Q_df = income_statement_Q.reset_index()
+
+    # Add a column to identify the statement type
+    balance_sheet_A_df["Statement_A"] = "Balance Sheet"
+    cash_flow_A_df["Statement_A"] = "Cash Flow"
+    income_statement_A_df["Statement_A"] = "Income Statement"
+
+    balance_sheet_Q_df["Statement_Q"] = "Balance Sheet"
+    cash_flow_Q_df["Statement_Q"] = "Cash Flow"
+    income_statement_Q_df["Statement_Q"] = "Income Statement"
+
+    # Combine all statements into one DataFrame
+    combined_A_df = pd.concat([balance_sheet_A_df, cash_flow_A_df, income_statement_A_df], ignore_index=True)
+    combined_Q_df = pd.concat([balance_sheet_Q_df, cash_flow_Q_df, income_statement_Q_df], ignore_index=True)
+    # Explicitly reorder columns
+    columns_order = ["Statement_A"] + [col for col in combined_A_df.columns if col != "Statement_A"]
+    combined_A_df = combined_A_df[columns_order]
+    columns_order = ["Statement_Q"] + [col for col in combined_Q_df.columns if col != "Statement_Q"]
+    combined_Q_df = combined_Q_df[columns_order]
+
+    # Save to a CSV file
+    csv_file_A = f"{row['Symbol']}financial_statements_A_{today}.csv"
+    combined_A_df.to_csv(csv_file_A, index=False)
+    csv_file_Q = f"{row['Symbol']}financial_statements_Q_{today}.csv"
+    combined_Q_df.to_csv(csv_file_Q, index=False)
+    print(f"Financial data has been saved to '{csv_file_A}'.")
+    print(f"Financial data has been saved to '{csv_file_Q}'.")
+
+    if {row['Symbol']} is None:
+        break
