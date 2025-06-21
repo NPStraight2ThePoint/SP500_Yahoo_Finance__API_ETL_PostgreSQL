@@ -1,24 +1,42 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import os
 from datetime import date
+import os
 
-today = date.today() # Get today's date
+def scrape_sp500_tickers(output_dir: str = './data', save_csv: bool = True) -> list:
+    """
+    Scrapes the list of S&P 500 tickers from Wikipedia and saves to CSV.
 
-# URL of the Wikipedia page
-url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
+    Args:
+        output_dir (str): Directory to save the CSV file.
+        save_csv (bool): Whether to save the CSV file.
 
-response = requests.get(url) # Send a GET request to the URL
+    Returns:
+        List[str]: List of ticker symbols.
+    """
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
 
-soup = BeautifulSoup(response.text, 'html.parser') # Parse the HTML content
+    url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
 
-table = soup.find('table', {'id': 'constituents'}) # Find the table containing the S&P 500 companies
+    response = requests.get(url)
+    response.raise_for_status()  # Raise error if request failed
 
-df = pd.read_html(str(table))[0] # Read the table into a pandas DataFrame
+    soup = BeautifulSoup(response.text, 'html.parser')
+    table = soup.find('table', {'id': 'constituents'})
 
-tickers = df['Symbol'].tolist() # Extract the ticker symbols
+    df = pd.read_html(str(table))[0]
+    tickers = df['Symbol'].tolist()
 
-print(tickers) # Print the tickers
+    if save_csv:
+        today_str = date.today().isoformat()
+        output_path = os.path.join(output_dir, f'SP500_Tickers_{today_str}.csv')
+        df.to_csv(output_path, index=False)
+        print(f'Saved S&P 500 tickers CSV to: {output_path}')
 
-df.to_csv('SP500_Tickers.csv', index=False)
+    return tickers
+
+if __name__ == '__main__':
+    tickers = scrape_sp500_tickers()
+    print(f'Total tickers scraped: {len(tickers)}')
