@@ -1,68 +1,97 @@
 import os
 import pandas as pd
-
-# Path to the folder where your CSVs are located
-folder_path = "Root/SP_500_Pricing"
-
-# List to hold individual DataFrames
-dfs = []
-
-# Loop through all CSV files in the folder
-for filename in os.listdir(folder_path):
-    if filename.endswith('.csv'):  # Ensure we're only dealing with CSV files
-        # Construct the full file path
-        file_path = os.path.join(folder_path, filename)
-
-        # Read each CSV file into a DataFrame
-        df = pd.read_csv(file_path)
-
-        # Convert the 'Date' column to datetime format (adjust format as needed)
-        df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')  # or just omit 'format' if needed
-
-        # Append to the list of DataFrames
-        dfs.append(df)
-
-# Concatenate all DataFrames into a single DataFrame
-merged_df = pd.concat(dfs, ignore_index=True)
-
-# Save the merged DataFrame to a new CSV file
-output_path = 'sp_500_merged_data.csv'
-merged_df.to_csv(output_path, index=False)
-
-print(f'Merged CSV saved to {output_path}')
-
 import psycopg2
-import pandas as pd
+from psycopg2 import sql, OperationalError
 
-# Database connection parameters
-dbname = 'Yahoo_Finance_API'
-user = '****'
-password = '****'
-host = 'localhost'  # or your host IP
+def merge_csv_files(folder_path: str, output_path: str) -> pd.DataFrame:
+    """
+    Merge all CSV files in a folder into a single DataFrame and save to CSV.
 
-# Read the merged CSV into a DataFrame
-df = pd.read_csv('sp_500_merged_data.csv')
+    Args:
+        folder_path (str): Path to folder containing CSV files.
+        output_path (str): Path to save merged CSV.
 
-# Establish a connection to PostgreSQL
-conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
+    Returns:
+        pd.DataFrame: Merged DataFrame.
+    """
+    dfs = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.csv'):
+            file_path = os.path.join(folder_path, filename)
+            df = pd.read_csv(file_path)
+            # Parse Date column, fallback to default parsing if format unknown
+            try:
+                df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
+            except Exception:
+                df['Date'] = pd.to_datetime(df['Date'])
+            dfs.append(df)
 
-# Create a cursor object
-cur = conn.cursor()
+    merged_df = pd.concat(dfs, ignore_index=True)
+    merged_df.to_csv(output_path, index=False)
+    print(f"Merged CSV saved to {output_path}")
+    return merged_df
 
-# Create the SQL query to load the data into the table
-copy_query = """
-COPY public."SP_500_Pricing" (date, ticker, open, high, low, close, adj_close, volume, dividends, stock_splits)
-FROM stdin WITH CSV HEADER DELIMITER as ','
-"""
+def load_csv_to_postgres(
+    csv_path: str,
+    dbname: str,
+    user: str,
+    password: str,
+    host: str = 'localhost',
+    port: int = 5432,
+    table_name: str = 'public."SP_500_Pricing"'
+):
+    """
+    Load CSV file data into PostgreSQL table using COPY command.
 
-# Open the CSV file and copy its content to the PostgreSQL table
-with open('sp_500_merged_data.csv', 'r') as f:
-    cur.copy_expert(sql=copy_query, file=f)
+    Args:
+        csv_path (str): Path to the CSV file.
+        dbname (str): Database name.
+        user (str): Username.
+        password (str): Password.
+        host (str): Hostname or IP address.
+        port (int): Port number.
+        table_name (str): Target table with schema.
+    """
+    try:
+        conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
+        cur = conn.cursor()
+        copy_query = sql.SQL("""
+            COPY {table} (date, ticker, open, high, low, close, adj_close, volume, dividends, stock_splits)
+            FROM STDIN WITH CSV HEADER DELIMITER ','
+        """).format(table=sql.Identifier(*table_name.replace('"', '').split('.')))
 
-# Commit the transaction and close the connection
-conn.commit()
-cur.close()
-conn.close()
+        with open(csv_path, 'r') as f:
+            cur.copy_expert(copy_query, f)
 
-print("Data loaded successfully into PostgreSQL!")
+        conn.commit()
+        print("Data loaded successfully into PostgreSQL!")
+    except OperationalError as e:
+        print(f"Database connection failed: {e}")
+    except Exception as e:
+        print(f"Failed to load data: {e}")
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        if 'conn' in locals():
+            conn.close()
+
+if __name__ == "__main__":
+    # Config paths
+    csv_folder = "Root/SP_500_Pricing" # <-- Fill in
+    merged_csv = "Root/sp_500_merged_data.csv" # <-- Fill in
+
+    # Database config
+    DB_NAME = 'Yahoo_Finance_API'
+    DB_USER = 'postgres'
+    DB_PASS = ''  # <-- Fill in your password
+    DB_HOST = 'localhost'
+    DB_PORT = 5432
+    DB_TABLE = 'public."SP_500_Pricing"'
+
+    # Merge CSV files
+    merge_csv_files(csv_folder, merged_csv)
+
+    # Load merged CSV to Postgres
+    load_csv_to_postgres(merged_csv, DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_TABLE)
+
 
