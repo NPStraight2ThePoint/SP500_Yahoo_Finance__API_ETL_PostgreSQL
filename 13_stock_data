@@ -1,0 +1,34 @@
+from yahooquery import Ticker
+
+aapl = Ticker('aapl')
+
+print(aapl.earning_history)
+print(aapl.earnings)
+print(aapl.earnings_trend)
+print(aapl.esg_scores)
+print(aapl.financial_data)
+print(aapl.fund_ownership)
+print(aapl.summary_detail)
+print(aapl.summary_profile)
+print(aapl.calendar_events)
+print(aapl.company_officers)
+print(aapl.index_trend)
+print(aapl.industry_trend)
+print(aapl.insider_holders)
+print(aapl.institution_ownership)
+print(aapl.key_stats)
+print(aapl.major_holders)
+print(aapl.page_views)
+print(aapl.price)
+print(aapl.quote_type)
+print(aapl.recommendation_trend)
+print(aapl.share_purchase_activity)
+
+df = aapl.grading_history
+print(df.head())
+
+df2 = aapl.insider_transactions
+print(df2.head())
+
+df3 = aapl.sec_filings
+print(df3.head())
