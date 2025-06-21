@@ -1,0 +1,73 @@
+from yahooquery import Ticker
+import pandas as pd
+import os
+from datetime import date
+
+# Get today's date
+today = date.today()
+
+# Read the CSV file into a DataFrame
+df = pd.read_csv('SP500_Tickers.csv')
+
+# Loop through each row in the DataFrame
+for index, row in df.iterrows():
+
+    stock = Ticker(row['Symbol'])
+    # Save the DataFrame to a CSV file
+    csv_file_path = f"{row['Symbol']}_Technical_Reports_{today}.csv"  # Define your file name and path
+    # Fetch technical insights for all available tickers
+    responses = stock.technical_insights
+
+    # Check if the response contains data
+    if not responses:
+       print("No technical insights data retrieved.")
+       exit()
+
+    # Flatten the reports section for all tickers
+    flattened_data = []
+    for ticker, response in responses.items():
+       # Ensure the response for this ticker contains a 'reports' section
+       reports = response.get('reports', [])
+       if not reports:
+          continue  # Skip if no reports for this ticker
+
+       # Process the reports
+       for report in reports:
+        base_data = {
+            "ticker": ticker,  # Include the ticker symbol
+            "id": report.get("id"),
+            "headHtml": report.get("headHtml"),
+            "provider": report.get("provider"),
+            "reportDate": report.get("reportDate"),
+            "title": report.get("title"),
+        }
+        # Flatten tickers in the report (if any)
+        tickers_in_report = report.get("tickers", [])
+        for listed_ticker in tickers_in_report:
+            row = base_data.copy()
+            row["listedTicker"] = listed_ticker
+            flattened_data.append(row)
+        if not tickers_in_report:  # Handle reports without tickers
+            base_data["listedTicker"] = None
+            flattened_data.append(base_data)
+
+    # Convert the flattened data into a pandas DataFrame
+    df = pd.DataFrame(flattened_data)
+    # Group by unique 'title' and concatenate all tickers into a single row
+
+    result_df = (
+      df.groupby('title')
+       .agg({
+          'id': 'first',               # Keep the first ID
+          'headHtml': 'first',         # Keep the first headHtml
+          'provider': 'first',         # Keep the first provider
+          'reportDate': 'first',       # Keep the first reportDate
+          'listedTicker': lambda x: ', '.join(set(ticker for sublist in x for ticker in (sublist if isinstance(sublist, list) else [sublist])))  # Ensure tickers are treated as lists
+       })
+      .reset_index()
+    )
+
+    # Display the resulting DataFrame
+    print(result_df)
+
+    result_df.to_csv(csv_file_path, index=False)
