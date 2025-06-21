@@ -1,0 +1,57 @@
+import pandas as pd
+import glob
+import os
+from datetime import date
+
+today = date.today()
+
+# Define the path to your folder containing CSV files
+folder_path = 'Root/SP_500_Company_Info'
+
+# Use glob to get all the CSV files in the folder
+all_files = glob.glob(os.path.join(folder_path, "*.csv"))
+
+# Read and concatenate all CSV files
+df = pd.concat((pd.read_csv(f) for f in all_files), ignore_index=False, axis=1)
+
+# Save the merged DataFrame to a new CSV file
+df.to_csv(f'sp500_joined_CompanyInfo_{today}.csv', index=False)
+
+print("All CSV files have been merged successfully!")
+
+# Path to your CSV file
+csv_file = f'sp500_joined_CompanyInfo_{today}.csv'
+
+# Read the CSV file
+df = pd.read_csv(csv_file)
+
+# Rename columns containing "Unnamed" to "Date"
+df.columns = [col if "Unnamed" not in col else "Date" for col in df.columns]
+
+# Save changes back to the same CSV file
+df.to_csv(csv_file, index=False)
+
+# Load CSV
+file_path = f"Root/sp500_joined_CompanyInfo_{today}.csv"
+df = pd.read_csv(file_path)
+
+# Keep only the first 'Date' column, drop the duplicate Date columns
+df = df.loc[:, ~df.columns.str.startswith('Date', 1)]  # Removes all extra date columns except the first one
+
+# Reshape: Convert wide format to long format
+df_long = df.melt(id_vars=["Date"], var_name="Ticker_Indicator", value_name="Value")
+
+# Split 'Ticker_Indicator' into 'Ticker' and 'Indicator'
+df_long[["Ticker", "Indicator"]] = df_long["Ticker_Indicator"].str.extract(r"([A-Z]+)(?:\.(\d+))?", expand=True)
+
+# Reorder and drop unnecessary columns
+df_final = df_long[["Date", "Ticker", "Indicator", "Value"]].dropna()
+
+# Save to new CSV (or load into SQL)
+df_final.to_csv("formatted_data.csv", index=False)
+
+# Preview transformed data
+print(df_final.head())
+
+
+
