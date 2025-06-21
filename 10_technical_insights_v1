@@ -1,0 +1,129 @@
+import csv
+import pandas as pd
+from yahooquery import Ticker
+import os
+from datetime import date
+
+# Get today's date
+today = date.today()
+
+# Read the CSV file into a DataFrame
+df = pd.read_csv('SP500_Tickers.csv')
+
+# Define headers and their JSON paths
+header_mapping = {
+    "Symbol": "symbol",
+    "Provider Info": "instrumentInfo_technicalEvents_provider",
+    "Sector Info": "instrumentInfo_technicalEvents_sector",
+    "Short Term stateDescription": "instrumentInfo_technicalEvents_shortTermOutlook_stateDescription",
+    "Short Term Direction": "instrumentInfo_technicalEvents_shortTermOutlook_direction",
+    "Short Term Score": "instrumentInfo_technicalEvents_shortTermOutlook_score",
+    "Short Term scoreDescription": "instrumentInfo_technicalEvents_shortTermOutlook_scoreDescription",
+    "Short Term sectorDirection": "instrumentInfo_technicalEvents_shortTermOutlook_sectorDirection",
+    "Short Term sectorScore": "instrumentInfo_technicalEvents_shortTermOutlook_sectorScore",
+    "Short Term sectorScoreDescription": "instrumentInfo_technicalEvents_shortTermOutlook_sectorScoreDescription",
+    "Short Term indexDirection": "instrumentInfo_technicalEvents_shortTermOutlook_indexDirection",
+    "Short Term indexScore": "instrumentInfo_technicalEvents_shortTermOutlook_indexScore",
+    "Short Term indexScoreDescription": "instrumentInfo_technicalEvents_shortTermOutlook_indexScoreDescription",
+    "Intermediate Term stateDescription": "instrumentInfo_technicalEvents_intermediateTermOutlook_stateDescription",
+    "Intermediate Term Direction": "instrumentInfo_technicalEvents_intermediateTermOutlook_direction",
+    "Intermediate Term Score": "instrumentInfo_technicalEvents_intermediateTermOutlook_score",
+    "Intermediate Term scoreDescription": "instrumentInfo_technicalEvents_intermediateTermOutlook_scoreDescription",
+    "Intermediate Term sectorDirection": "instrumentInfo_technicalEvents_intermediateTermOutlook_sectorDirection",
+    "Intermediate Term sectorScore": "instrumentInfo_technicalEvents_intermediateTermOutlook_sectorScore",
+    "Intermediate Term sectorScoreDescription": "instrumentInfo_technicalEvents_intermediateTermOutlook_sectorScoreDescription",
+    "Intermediate Term indexDirection": "instrumentInfo_technicalEvents_intermediateTermOutlook_indexDirection",
+    "Intermediate Term indexScore": "instrumentInfo_technicalEvents_intermediateTermOutlook_indexScore",
+    "Intermediate Term indexScoreDescription": "instrumentInfo_technicalEvents_intermediateTermOutlook_indexScoreDescription",
+    "Long Term stateDescription": "instrumentInfo_technicalEvents_longTermOutlook_stateDescription",
+    "Long Term Direction": "instrumentInfo_technicalEvents_longTermOutlook_direction",
+    "Long Term Score": "instrumentInfo_technicalEvents_longTermOutlook_score",
+    "Long Term scoreDescription": "instrumentInfo_technicalEvents_longTermOutlook_scoreDescription",
+    "Long Term sectorDirection": "instrumentInfo_technicalEvents_longTermOutlook_sectorDirection",
+    "Long Term sectorScore": "instrumentInfo_technicalEvents_longTermOutlook_sectorScore",
+    "Long Term sectorScoreDescription": "instrumentInfo_technicalEvents_longTermOutlook_sectorScoreDescription",
+    "Long Term indexDirection": "instrumentInfo_technicalEvents_longTermOutlook_indexDirection",
+    "Long Term indexScore": "instrumentInfo_technicalEvents_longTermOutlook_indexScore",
+    "Long Term indexScoreDescription": "instrumentInfo_technicalEvents_longTermOutlook_indexScoreDescription",
+    "Key Technicals Provider": "instrumentInfo_keyTechnicals_provider",
+    "Key Technicals support": "instrumentInfo_keyTechnicals_support",
+    "Key Technicals resistance": "instrumentInfo_keyTechnicals_resistance",
+    "Key Technicals stopLoss": "instrumentInfo_keyTechnicals_stopLoss",
+    "Support Level": "instrumentInfo_keyTechnicals_support",
+    "Resistance Level": "instrumentInfo_keyTechnicals_resistance",
+    "Stop Loss": "instrumentInfo_keyTechnicals_stopLoss",
+    "Valuation Description": "instrumentInfo_valuation_description",
+    "Valuation discount": "instrumentInfo_valuation_discount",
+    "Valuation relativeValue": "instrumentInfo_valuation_relativeValue",
+    "Company_sectorInfo": "companySnapshot_sectorInfo",
+    "Company_Innovativeness": "companySnapshot_company_innovativeness",
+    "company_hiring": "companySnapshot_company_hiring",
+    "company_sustainability": "companySnapshot_company_sustainability",
+    "company_insiderSentiments": "companySnapshot_company_insiderSentiments",
+    "company_earningsReports": "companySnapshot_company_earningsReports",
+    "company_dividends": "companySnapshot_company_dividends",
+    "Sector_Innovativeness": "companySnapshot_sector_innovativeness",
+    "Sector_hiring": "companySnapshot_sector_hiring",
+    "Sector_sustainability": "companySnapshot_sector_sustainability",
+    "Sector_insiderSentiments": "companySnapshot_sector_insiderSentiments",
+    "Sector_earningsReports": "companySnapshot_sector_earningsReports",
+    "Sector_dividends": "companySnapshot_sector_dividends",
+    "Target Price": "recommendation_targetPrice",
+    "recommendation_provider": "recommendation_provider",
+    "Recommendation_Rating": "recommendation_rating",
+    "Company Name": "upsell_companyName",
+    "reportId": "upsellSearchDD_researchReports_reportId",
+    "Provider": "upsellSearchDD_researchReports_provider",
+    "title": "upsellSearchDD_researchReports_title",
+    "upsellSearchDD_researchReports_reportDate": "upsellSearchDD_researchReports_reportDate",
+    "upsellSearchDD_researchReports_summary": "upsellSearchDD_researchReports_summary",
+    "upsellSearchDD_researchReports_investmentRating": "upsellSearchDD_researchReports_investmentRating",
+    "events_eventType": "events_eventType",
+    "events_pricePeriod": "events_pricePeriod",
+    "events_tradingHorizon": "events_tradingHorizon",
+    "events_tradeType": "events_tradeType",
+    "events_imageUrl": "events_imageUrl",
+    "events_startDate": "events_startDate",
+    "events_endDate": "events_endDate",
+}
+
+def get_nested_value(data, path):
+    keys = path.split("_")
+    for key in keys:
+        if isinstance(data, list):  # If data is a list, extract the first item
+            if data:  # Check if the list is non-empty
+                data = data[0]
+            else:
+                return None  # Return None for an empty list
+        if isinstance(data, dict) and key in data:
+            data = data[key]
+        else:
+            return None  # Return None if any key in the path is missing
+    return data
+
+# Loop through each row in the DataFrame
+for index, row in df.iterrows():
+
+    stock = Ticker(row['Symbol'])
+
+    response = stock.technical_insights
+
+    # Flatten and map the response using the predefined headers
+    flattened_data = []
+    for symbol, data in response.items():
+        row = {}
+        for header, path in header_mapping.items():
+            row[header] = get_nested_value(data, path)
+        flattened_data.append(row)
+
+    # Convert to DataFrame
+    df = pd.DataFrame(flattened_data)
+
+    # Display the DataFrame
+    print(df)
+
+    # Save the DataFrame to a CSV file
+    csv_file_path = f"{row['Symbol']}_Technical_Insights_{today}.csv"  # Define your file name and path
+    df.to_csv(csv_file_path, index=False)
+
+    print(f"Data saved to {csv_file_path}")
