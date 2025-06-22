@@ -11,24 +11,16 @@ ETL pipeline that extracts historical pricing & financial indicators for all S&P
 
 ## Workflow
 
-- `1_get_sp500_tickers.py`  
-  → Scrape all S&P 500 tickers from Wikipedia.
+| Script                       | Description                                               | Data List (File)           | DB View (Screenshot)                                  |
+|------------------------------|-----------------------------------------------------------|----------------------------|------------------------------------------------------ |
+| `1_get_sp500_tickers.py`     | Scrapes S&P 500 ticker list from Wikipedia                | `sp500_tickers.csv`        |       |
+| `2_1_get_sp500_prices.py`    | Extracts OHLCV pricing, splits, dividends                 | `pricing_data.csv`         | ![Pricing Table]([screenshots/pricing_table.png](https://github.com/NPStraight2ThePoint/SP500_Yahoo_Finance__API_ETL_PostgreSQL/blob/Main/Database/Pricing.png))       |
+| `3_1_get_sp500_indicators.py`| Extracts 180+ financial indicators                        | `indicators.csv`           | ![Indicators Table](screenshots/indicators_table.png) |
+| `4_1_get_BS_IS_CF.py`        | Extracts analyst recommendations for tickers              | `recommendations.csv`      | ![Recommendations](screenshots/recommendations.png)   |
+| `5_1_recommendations.py`     | Extracts options chains data                              | `options_chain.csv`        | ![Options Chain](screenshots/options_chain.png)       |
+| `6_1_options.py`             | Extracts Balance Sheet, Income Statement, Cash Flow data  | `financial_statements.csv` | ![Financials](screenshots/financials_view.png)        |
 
-- `2_1_get_sp500_prices_ITD.py`  
-  → Retrieve inception-to-date historical pricing (Open, Close, High, Low, Adj. Close, Volume, Dividends, Stock Splits) for all S&P 500 tickers.
 
-- `2_2_prices_compile_load.py`  
-  → Load pricing data into the database.
-
-- `3_1_get_sp500_indicators.py`  
-  → Retrieve 180+ indicators for all S&P 500 tickers.  
-  [Yahoo Finance Indicators](https://github.com/NPStraight2ThePoint/Yahoo_Finance_API_ETL_PostgreSQL/blob/Main/yahoo_finance_indicators)
-
-- `3_2_indicators_compile_load.py`  
-  → Load indicator data into the database.
-
-- `4_adj_closes_ITD_merged.py`  
-  → Merge all Adj. Close pricing into one CSV.
 
 ## Database
 
