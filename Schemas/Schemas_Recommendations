@@ -1,0 +1,11 @@
+# recommendations
+
+| column_name | data_type | is_nullable |
+|-------------|-----------|-------------|
+| ticker      | text      | YES         |
+| date        | date      | YES         |
+| strongbuy   | integer   | YES         |
+| buy         | integer   | YES         |
+| hold        | integer   | YES         |
+| sell        | integer   | YES         |
+| strongsell  | integer   | YES         |
