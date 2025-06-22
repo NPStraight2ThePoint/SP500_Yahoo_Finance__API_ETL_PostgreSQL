@@ -1,0 +1,29 @@
+import os
+import shutil
+from utils import PRICING_DIR, INDICATORS_DIR, FINANCIALS_DIR, RECOMMENDATIONS_DIR, ARCHIVE_DIR
+
+# List of source folders (modify this list)
+source_folders = [
+    PRICING_DIR,
+    INDICATORS_DIR,
+    FINANCIALS_DIR,
+    RECOMMENDATIONS_DIR,
+    ARCHIVE_DIR
+]
+
+# Target folder where all files will be moved
+target_folder = ARCHIVE_DIR
+
+# Create target folder if it doesn't exist
+os.makedirs(target_folder, exist_ok=True)
+
+# Loop through each folder and move files
+for folder in source_folders:
+    for filename in os.listdir(folder):
+        src_path = os.path.join(folder, filename)
+        dst_path = os.path.join(target_folder, filename)
+
+        # Only move if it's a file
+        if os.path.isfile(src_path):
+            shutil.move(src_path, dst_path)
+            print(f"Moved: {src_path} → {dst_path}")
