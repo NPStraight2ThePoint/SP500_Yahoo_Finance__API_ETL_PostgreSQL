@@ -1,0 +1,186 @@
+# Indicators
+
+| column_name                     | data_type               | is_nullable |
+|--------------------------------|------------------------|-------------|
+| date                           | date                   | NO          |
+| ticker                         | character varying      | NO          |
+| 52WeekChange                   | double precision       | YES         |
+| sandp52weekchange              | double precision       | YES         |
+| address1                      | text                   | YES         |
+| ask                           | double precision       | YES         |
+| asksize                       | double precision       | YES         |
+| auditrisk                     | double precision       | YES         |
+| averageanalystrating          | character varying      | YES         |
+| averagedailyvolume10day       | double precision       | YES         |
+| averagedailyvolume3month      | double precision       | YES         |
+| averagevolume                 | double precision       | YES         |
+| averagevolume10days           | double precision       | YES         |
+| beta                          | double precision       | YES         |
+| bid                           | double precision       | YES         |
+| bidsize                       | double precision       | YES         |
+| boardrisk                     | double precision       | YES         |
+| bookvalue                     | double precision       | YES         |
+| city                          | character varying      | YES         |
+| companyofficers               | jsonb                  | YES         |
+| compensationasofepochdate     | double precision       | YES         |
+| compensationrisk              | double precision       | YES         |
+| corporateactions              | jsonb                  | YES         |
+| country                       | character varying      | YES         |
+| cryptotradeable               | boolean                | YES         |
+| currency                      | character varying      | YES         |
+| currentprice                  | double precision       | YES         |
+| currentratio                  | double precision       | YES         |
+| custompricealertconfidence    | character varying      | YES         |
+| dateshortinterest             | double precision       | YES         |
+| dayhigh                       | double precision       | YES         |
+| daylow                        | double precision       | YES         |
+| debttoequity                  | double precision       | YES         |
+| displayname                   | character varying      | YES         |
+| dividenddate                  | double precision       | YES         |
+| dividendrate                  | double precision       | YES         |
+| dividendyield                 | double precision       | YES         |
+| earningscalltimestampend      | double precision       | YES         |
+| earningscalltimestampstart    | double precision       | YES         |
+| earningsgrowth                | double precision       | YES         |
+| earningsquarterlygrowth       | double precision       | YES         |
+| earningstimestamp             | double precision       | YES         |
+| earningstimestampend          | double precision       | YES         |
+| earningstimestampstart        | double precision       | YES         |
+| ebitda                        | double precision       | YES         |
+| ebitdamargins                 | double precision       | YES         |
+| enterprisetoebitda            | double precision       | YES         |
+| enterprisetorevenue           | double precision       | YES         |
+| enterprisevalue               | double precision       | YES         |
+| epscurrentyear               | double precision       | YES         |
+| epsforward                   | double precision       | YES         |
+| epstrailingtwelvemonths       | double precision       | YES         |
+| esgpopulated                 | boolean                | YES         |
+| exdividenddate               | double precision       | YES         |
+| exchange                     | character varying      | YES         |
+| exchangedatadelayedby        | double precision       | YES         |
+| exchangetimezonename         | character varying      | YES         |
+| exchangetimezoneshortname    | character varying      | YES         |
+| executiveteam                | jsonb                  | YES         |
+| fiftydayaverage              | double precision       | YES         |
+| fiftydayaveragechange        | double precision       | YES         |
+| fiftydayaveragechangepercent | double precision       | YES         |
+| fiftytwoweekchangepercent    | double precision       | YES         |
+| fiftytwoweekhigh             | double precision       | YES         |
+| fiftytwoweekhighchange       | double precision       | YES         |
+| fiftytwoweekhighchangepercent | double precision      | YES         |
+| fiftytwoweeklow              | double precision       | YES         |
+| fiftytwoweeklowchange        | double precision       | YES         |
+| fiftytwoweeklowchangepercent | double precision       | YES         |
+| fiftytwoweekrange            | character varying      | YES         |
+| financialcurrency            | character varying      | YES         |
+| firsttradedatemilliseconds   | double precision       | YES         |
+| fiveyearavgdividendyield     | double precision       | YES         |
+| floatshares                 | double precision       | YES         |
+| forwardeps                  | double precision       | YES         |
+| forwardpe                   | double precision       | YES         |
+| freecashflow                | double precision       | YES         |
+| fullexchangename            | character varying      | YES         |
+| fulltimeemployees           | double precision       | YES         |
+| gmtoffsetmilliseconds       | double precision       | YES         |
+| governanceepochdate         | double precision       | YES         |
+| grossmargins                | double precision       | YES         |
+| grossprofits                | double precision       | YES         |
+| hasprepostmarketdata        | boolean                | YES         |
+| heldpercentinsiders         | double precision       | YES         |
+| heldpercentinstitutions     | double precision       | YES         |
+| impliedsharesoutstanding    | double precision       | YES         |
+| industry                    | character varying      | YES         |
+| industrydisp                | character varying      | YES         |
+| industrykey                 | character varying      | YES         |
+| irwebsite                   | text                   | YES         |
+| isearningsdateestimate      | boolean                | YES         |
+| language                    | character varying      | YES         |
+| lastdividenddate            | double precision       | YES         |
+| lastdividendvalue           | double precision       | YES         |
+| lastfiscalyearend           | double precision       | YES         |
+| lastsplitdate               | double precision       | YES         |
+| lastsplitfactor             | character varying      | YES         |
+| longbusinesssummary         | text                   | YES         |
+| longname                    | character varying      | YES         |
+| market                      | character varying      | YES         |
+| marketcap                   | double precision       | YES         |
+| marketstate                 | character varying      | YES         |
+| maxage                      | double precision       | YES         |
+| messageboardid              | character varying      | YES         |
+| mostrecentquarter           | double precision       | YES         |
+| netincometocommon           | double precision       | YES         |
+| nextfiscalyearend           | double precision       | YES         |
+| numberofanalystopinions     | double precision       | YES         |
+| open                        | double precision       | YES         |
+| operatingcashflow           | double precision       | YES         |
+| operatingmargins            | double precision       | YES         |
+| overallrisk                 | double precision       | YES         |
+| payoutratio                 | double precision       | YES         |
+| phone                       | character varying      | YES         |
+| postmarketchange            | double precision       | YES         |
+| postmarketchangepercent     | double precision       | YES         |
+| postmarketprice             | double precision       | YES         |
+| postmarkettime              | double precision       | YES         |
+| previousclose               | double precision       | YES         |
+| priceepscurrentyear         | double precision       | YES         |
+| pricehint                   | double precision       | YES         |
+| pricetobook                 | double precision       | YES         |
+| pricetosalestrailing12months | double precision      | YES         |
+| profitmargins               | double precision       | YES         |
+| quickratio                  | double precision       | YES         |
+| quotesourcename             | character varying      | YES         |
+| quotetype                   | character varying      | YES         |
+| recommendationkey           | character varying      | YES         |
+| recommendationmean          | double precision       | YES         |
+| region                      | character varying      | YES         |
+| regularmarketchange         | double precision       | YES         |
+| regularmarketchangepercent  | double precision       | YES         |
+| regularmarketdayhigh        | double precision       | YES         |
+| regularmarketdaylow         | double precision       | YES         |
+| regularmarketdayrange       | character varying      | YES         |
+| regularmarketopen           | double precision       | YES         |
+| regularmarketpreviousclose  | double precision       | YES         |
+| regularmarketprice          | double precision       | YES         |
+| regularmarkettime           | double precision       | YES         |
+| regularmarketvolume         | double precision       | YES         |
+| returnonassets              | double precision       | YES         |
+| returnonequity              | double precision       | YES         |
+| revenuegrowth               | double precision       | YES         |
+| revenuepershare             | double precision       | YES         |
+| sector                      | character varying      | YES         |
+| sectordisp                  | character varying      | YES         |
+| sectorkey                   | character varying      | YES         |
+| shareholderrightsrisk       | double precision       | YES         |
+| sharesoutstanding           | double precision       | YES         |
+| sharespercentsharesout      | double precision       | YES         |
+| sharesshort                 | double precision       | YES         |
+| sharesshortpreviousmonthdate | double precision      | YES         |
+| sharesshortpriormonth       | double precision       | YES         |
+| shortname                   | character varying      | YES         |
+| shortpercentoffloat         | double precision       | YES         |
+| shortratio                  | double precision       | YES         |
+| sourceinterval              | double precision       | YES         |
+| state                       | character varying      | YES         |
+| symbol                      | character varying      | YES         |
+| targethighprice             | double precision       | YES         |
+| targetlowprice              | double precision       | YES         |
+| targetmeanprice             | double precision       | YES         |
+| targetmedianprice           | double precision       | YES         |
+| totalcash                   | double precision       | YES         |
+| totalcashpershare           | double precision       | YES         |
+| totaldebt                   | double precision       | YES         |
+| totalrevenue                | double precision       | YES         |
+| tradeable                   | boolean                | YES         |
+| trailingannualdividendrate  | double precision       | YES         |
+| trailingannualdividendyield | double precision       | YES         |
+| trailingeps                 | double precision       | YES         |
+| trailingpe                  | double precision       | YES         |
+| trailingpegratio            | double precision       | YES         |
+| triggerable                 | boolean                | YES         |
+| twohundreddayaverage        | double precision       | YES         |
+| twohundreddayaveragechange  | double precision       | YES         |
+| twohundreddayaveragechangepercent | double precision  | YES         |
+| typedisp                    | character varying      | YES         |
+| volume                      | double precision       | YES         |
+| website                     | text                   | YES         |
+| zip                         | character varying      | YES         |
