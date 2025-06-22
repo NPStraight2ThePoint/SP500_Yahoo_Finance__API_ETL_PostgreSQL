@@ -8,7 +8,7 @@ ETL pipeline that extracts historical pricing & financial indicators for all S&P
 - API: **Yahoo Finance**
 - Database: **PostgreSQL**
 - Libraries: **BeautifulSoup, pandas, yfinance, psycopg2**
-- S&P 500 Ticker List: **Wikipedia**
+- S&P 500 Ticker List: [Wikipedia - List of S&P 500 Companies](https://en.wikipedia.org/wiki/List_of_S%26P_500_companies)
 
 ## Workflow
 
