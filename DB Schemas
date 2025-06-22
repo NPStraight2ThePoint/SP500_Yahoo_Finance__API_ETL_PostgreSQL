@@ -1,41 +1,4 @@
-#SP_500_Pricing
 
-| column_name    | data_type           | is_nullable |
-|----------------|---------------------|-------------|
-| date           | date                | NO          |
-| ticker         | character varying   | NO          |
-| open           | numeric             | YES         |
-| high           | numeric             | YES         |
-| low            | numeric             | YES         |
-| close          | numeric             | YES         |
-| adj_close      | numeric             | YES         |
-| volume         | bigint              | YES         |
-| dividends      | numeric             | YES         |
-| stock_splits   | numeric             | YES         |
-
-
-# options_chains
-
-| column_name       | data_type                      | is_nullable |
-|-------------------|--------------------------------|-------------|
-| contractsymbol     | text                           | NO          |
-| lasttradedate      | timestamp without time zone    | YES         |
-| strike             | numeric                        | YES         |
-| lastprice          | numeric                        | YES         |
-| bid                | numeric                        | YES         |
-| ask                | numeric                        | YES         |
-| change             | numeric                        | YES         |
-| percentchange      | numeric                        | YES         |
-| volume             | numeric                        | YES         |
-| openinterest       | integer                        | YES         |
-| impliedvolatility  | numeric                        | YES         |
-| inthemoney         | boolean                        | YES         |
-| contractsize       | text                           | YES         |
-| currency           | text                           | YES         |
-| expirationdate     | date                           | YES         |
-| optiontype         | text                           | YES         |
-| mid_price          | numeric                        | YES         |
-| intrinsicvalue     | numeric                        | YES         |
 
 # recommendations
 
