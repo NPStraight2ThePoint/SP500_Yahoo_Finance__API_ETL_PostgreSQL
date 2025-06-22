@@ -1,0 +1,14 @@
+#SP_500_Pricing
+
+| column_name    | data_type           | is_nullable |
+|----------------|---------------------|-------------|
+| date           | date                | NO          |
+| ticker         | character varying   | NO          |
+| open           | numeric             | YES         |
+| high           | numeric             | YES         |
+| low            | numeric             | YES         |
+| close          | numeric             | YES         |
+| adj_close      | numeric             | YES         |
+| volume         | bigint              | YES         |
+| dividends      | numeric             | YES         |
+| stock_splits   | numeric             | YES         |
