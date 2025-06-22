@@ -21,15 +21,6 @@ ETL pipeline that extracts historical pricing & financial indicators for all S&P
 | `6_1_get_BS_IS_CF.py`       | Extracts Balance Sheet, Income Statement, Cash Flow data | [`financial_statements.csv`](https://github.com/NPStraight2ThePoint/SP500_Yahoo_Finance__API_ETL_PostgreSQL/blob/Main/Schemas/Schemas_financial_statements) | [Financials](https://github.com/NPStraight2ThePoint/SP500_Yahoo_Finance__API_ETL_PostgreSQL/blob/Main/Database/Financial%20Statements.png)     |
 
 
-
-
-
-## Database
-
- - [Pricing](https://github.com/NPStraight2ThePoint/SP500_Yahoo_Finance__API_ETL_PostgreSQL/blob/Main/Database/DB_S%26P%20500%20Pricing%20Table.png)
- - [Indicators](https://github.com/NPStraight2ThePoint/SP500_Yahoo_Finance__API_ETL_PostgreSQL/blob/Main/Database/DB_S%26P%20500%20Indicators%20Table.png)
- 
-
 ### 🆔 Project Info
 
 **Author:** *Nicholas Papadimitris *  
