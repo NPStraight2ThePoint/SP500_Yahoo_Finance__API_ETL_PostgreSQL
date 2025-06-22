@@ -28,6 +28,7 @@ INDICATORS_DIR = os.path.join(ROOT_DIR, "SP_500_Company_Info")
 FINANCIALS_DIR = os.path.join(ROOT_DIR, "Financial Statements")
 RECOMMENDATIONS_DIR = os.path.join(ROOT_DIR, "Recommendations")
 OPTIONS_DIR = os.path.join(ROOT_DIR, "Options")
+ARCHIVE_DIR = os.path.join(ROOT_DIR, "Archive")
 TICKERS_CSV_PATH = os.path.join(STATIC_DIR, "SP500_Tickers.csv")
 INDICATORS_CSV_PATH = os.path.join(INDICATORS_DIR, f"company_info_flat_{today_str}.csv")
 
